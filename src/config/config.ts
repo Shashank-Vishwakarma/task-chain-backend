@@ -3,19 +3,19 @@ import "dotenv/config";
 import { EnvConfig } from "../types/config.js";
 
 export const Config: EnvConfig = {
-    PORT: parseInt(process.env.APPLICATION_PORT),
+    APPLICATION_PORT: parseInt(process.env.APPLICATION_PORT),
     REDIS: {
-        HOST: process.env.REDIS_HOST,
-        PORT: parseInt(process.env.REDIS_PORT),
-        USERNAME: process.env.REDIS_USERNAME,
-        PASSWORD: process.env.REDIS_PASSWORD
+        REDIS_HOST: process.env.REDIS_HOST,
+        REDIS_PORT: parseInt(process.env.REDIS_PORT),
+        REDIS_USERNAME: process.env.REDIS_USERNAME,
+        REDIS_PASSWORD: process.env.REDIS_PASSWORD
     },
     POSTGRES: {
-        HOST: process.env.POSTGRES_HOST,
-        PORT: parseInt(process.env.POSTGRES_PORT),
-        USERNAME: process.env.POSTGRES_USER,
-        PASSWORD: process.env.POSTGRES_PASSWORD,
-        DATABASE: process.env.POSTGRES_DATABASE,
+        POSTGRES_HOST: process.env.POSTGRES_HOST,
+        POSTGRES_PORT: parseInt(process.env.POSTGRES_PORT),
+        POSTGRES_USER: process.env.POSTGRES_USER,
+        POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
+        POSTGRES_DATABASE: process.env.POSTGRES_DATABASE,
     }
 }
 

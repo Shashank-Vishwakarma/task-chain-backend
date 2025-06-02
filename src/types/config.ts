@@ -1,16 +1,16 @@
 export interface EnvConfig {
-    PORT: number
+    APPLICATION_PORT: number
     REDIS: {
-        HOST: string
-        PORT: number
-        USERNAME: string
-        PASSWORD: string
+        REDIS_HOST: string
+        REDIS_PORT: number
+        REDIS_USERNAME: string
+        REDIS_PASSWORD: string
     }
     POSTGRES: {
-        HOST: string
-        PORT: number
-        USERNAME: string
-        PASSWORD: string
-        DATABASE: string
+        POSTGRES_HOST: string
+        POSTGRES_PORT: number
+        POSTGRES_USER: string
+        POSTGRES_PASSWORD: string
+        POSTGRES_DATABASE: string
     }
 }
