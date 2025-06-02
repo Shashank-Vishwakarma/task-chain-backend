@@ -1,0 +1,28 @@
+{
+  "name": "task-chain-backend",
+  "version": "1.0.0",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node dist/app.js",
+    "server": "nodemon dist/app.js",
+    "watch": "tsc -w",
+    "dev": "concurrently \"npm run watch\" \"npm run server\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shashank-Vishwakarma/task-chain-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Shashank-Vishwakarma/task-chain-backend/issues"
+  },
+  "homepage": "https://github.com/Shashank-Vishwakarma/task-chain-backend#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.10",
+    "typescript": "^5.8.3"
+  }
+}
