@@ -21,8 +21,13 @@
   },
   "homepage": "https://github.com/Shashank-Vishwakarma/task-chain-backend#readme",
   "devDependencies": {
+    "@types/express": "^5.0.2",
     "concurrently": "^9.1.2",
     "nodemon": "^3.1.10",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
   }
 }
