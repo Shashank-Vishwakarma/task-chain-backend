@@ -15,8 +15,9 @@ export const Config: EnvConfig = {
         POSTGRES_PORT: parseInt(process.env.POSTGRES_PORT),
         POSTGRES_USER: process.env.POSTGRES_USER,
         POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
-        POSTGRES_DATABASE: process.env.POSTGRES_DATABASE,
-    }
+        POSTGRES_DB: process.env.POSTGRES_DB,
+    },
+    JWT_SECRET: process.env.JWT_SECRET
 }
 
 export default function verifyEnvConfig(config: EnvConfig) {

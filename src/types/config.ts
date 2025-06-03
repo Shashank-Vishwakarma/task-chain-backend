@@ -11,6 +11,7 @@ export interface EnvConfig {
         POSTGRES_PORT: number
         POSTGRES_USER: string
         POSTGRES_PASSWORD: string
-        POSTGRES_DATABASE: string
+        POSTGRES_DB: string
     }
+    JWT_SECRET: string
 }

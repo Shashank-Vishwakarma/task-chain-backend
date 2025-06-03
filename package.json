@@ -4,8 +4,8 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "node dist/app.js",
-    "server": "nodemon dist/app.js",
+    "start": "node dist/src/app.js",
+    "server": "nodemon dist/src/app.js",
     "watch": "tsc -w",
     "dev": "concurrently \"npm run watch\" \"npm run server\""
   },
@@ -22,12 +22,24 @@
   "homepage": "https://github.com/Shashank-Vishwakarma/task-chain-backend#readme",
   "devDependencies": {
     "@types/express": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.15.29",
+    "@types/pg": "^8.15.4",
     "concurrently": "^9.1.2",
+    "drizzle-kit": "^0.31.1",
     "nodemon": "^3.1.10",
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "drizzle-orm": "^0.44.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.16.0",
+    "winston": "^3.17.0",
+    "zod": "^3.25.49"
   }
 }
