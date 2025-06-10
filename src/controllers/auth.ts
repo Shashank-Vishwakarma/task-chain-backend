@@ -2,14 +2,15 @@ import { CookieOptions, Request, Response } from "express"
 import {OAuth2Client} from "google-auth-library"
 
 import { logger } from "../logging/logger.js"
-import {googleAuthschema, loginUserSchema, registerUserSchema, verifyOTPSchema} from "../schemas/auth.js"
+import {forgotPasswordSchema, googleAuthschema, loginUserSchema, registerUserSchema, resetPasswordSchema, verifyOTPSchema, verifyPasswordResetOTPSchema} from "../schemas/auth.js"
 import { hashPassword, verifyPassword } from "../utils/password.js";
-import { getUserByEmail, saveUserToDB, updateUserVerifiedStatus } from "../database/utils.js";
+import { getUserByEmail, saveUserToDB } from "../database/utils.js";
 import { generateOTP, isOTPExpired } from "../utils/otp.js";
 import { sendEmail } from "../services/emailService.js";
 import { createJwtToken } from "../utils/jwt.js";
 import { db } from "../database/db.js";
 import { userTable } from "../database/schema/user.js";
+import { eq } from "drizzle-orm";
 
 const client = new OAuth2Client();
 
@@ -83,7 +84,12 @@ export const verifyOtpController = async (req: Request, res: Response) => {
                     return
                 }
 
-                await updateUserVerifiedStatus(verifyOtpRequestBody.email);
+                await db.update(userTable).set({
+                    isVerified: true
+                }).where(
+                    eq(userTable.email, verifyOtpRequestBody.email)
+                );
+
                 res.status(200).json({message: "Email verified successfully."});
                 return
             } else {
@@ -98,7 +104,7 @@ export const verifyOtpController = async (req: Request, res: Response) => {
     }
 }
 
-export const loginController = async (req: Request, res: Response): Promise<any> => {
+export const loginController = async (req: Request, res: Response) => {
     // validate request body with schema
     const {success, error, data: loginRequestBody} = loginUserSchema.safeParse(req.body);
     if(!success) {
@@ -145,6 +151,7 @@ export const loginController = async (req: Request, res: Response): Promise<any>
             return
         } else { // email does not exist
             res.status(400).json({message: "User not found. Please  Sign Up."});
+            return
         }
     } catch(error: any) {
         logger.error(`ERROR: loginController: Internal Server Error: ${error}`);
@@ -152,7 +159,7 @@ export const loginController = async (req: Request, res: Response): Promise<any>
     }
 }
 
-export const logoutController = async (req: Request, res: Response): Promise<any> => {
+export const logoutController = async (req: Request, res: Response) => {
     res.cookie("token", "", { maxAge: 0 });
     res.status(200).json({message: "Logout successful"});
 }
@@ -183,7 +190,7 @@ export const googleAuthController = async (req: Request, res: Response) => {
             await db.update(userTable).set({
                 provider: `${Provider.GOOGLE}_${Provider.CREDENTIALS}`,
                 profileUrl: payload["picture"]
-            })
+            }).where(eq(userTable.email, payload["email"]));
 
             if(googleAuthRequestBody.type === "login") {
                 res.status(200).json({message: "Login successful"});
@@ -230,6 +237,90 @@ export const googleAuthController = async (req: Request, res: Response) => {
         }
     } catch(error : any) {
         logger.error(`ERROR: googleAuthController: Internal Server Error: ${error}`);
+        res.status(500).json({error: "Something went wrong!"});
+    }
+}
+
+export const forgotPasswordController = async (req: Request, res: Response) => {
+    // validate request body with schema
+    const {success, error, data: forgotPasswordRequestBody} = forgotPasswordSchema.safeParse(req.body);
+    if(!success) {
+        logger.error(`ERROR: forgotPasswordController: Invalid request body : ${error.message}`);
+        res.status(400).json({message: "Invalid request body"});
+        return
+    }
+
+    try {
+        // check if user exists in DB or not
+        const user =await getUserByEmail(forgotPasswordRequestBody.email);
+        if(user.length > 0 && user[0].isVerified) {
+            const Otp = generateOTP();
+            await db.update(userTable).set({otp: Otp}).where(eq(userTable.email, forgotPasswordRequestBody.email));
+
+            await sendEmail(forgotPasswordRequestBody.email, "Password Reset OTP", `Your OTP is ${Otp}`);
+
+            res.status(200).json({message: "OTP sent successfully."});
+        } else {
+            logger.error(`ERROR: forgotPasswordController: User does not exist: ${forgotPasswordRequestBody.email}`);
+            res.status(400).json({message: "User does not exist or Email not verified."});
+        }
+    } catch(error: any) {
+        logger.error(`ERROR: forgotPasswordController: Internal Server Error: ${error}`);
+        res.status(500).json({error: "Something went wrong!"});
+    }
+}
+
+export const verifyPasswordResetOTPController = async (req: Request, res: Response) => {
+    // validate request body with schema
+    const {success, error, data: verifyPasswordResetOTPRequestBody} = verifyPasswordResetOTPSchema.safeParse(req.body);
+    if(!success) {
+        logger.error(`ERROR: verifyPasswordResetOTPController: Invalid request body : ${error.message}`);
+        res.status(400).json({message: "Invalid request body"});
+        return
+    }
+
+    try {
+        // check if user exists in DB or not
+        const user =await getUserByEmail(verifyPasswordResetOTPRequestBody.email);
+        if(user.length > 0 && user[0].isVerified) {
+            if(user[0].otp === verifyPasswordResetOTPRequestBody.otp) {
+                res.status(200).json({message: "OTP verified successfully."});
+            } else {
+                logger.error(`ERROR: verifyPasswordResetOTPController: Invalid OTP: ${verifyPasswordResetOTPRequestBody.email}`);
+                res.status(400).json({message: "Invalid OTP"});
+            }
+        } else {
+            logger.error(`ERROR: verifyPasswordResetOTPController: User does not exist: ${verifyPasswordResetOTPRequestBody.email}`);
+            res.status(400).json({message: "User does not exist or Email not verified."});
+        }
+    } catch(error: any) {
+        logger.error(`ERROR: verifyPasswordResetOTPController: Internal Server Error: ${error}`);
+        res.status(500).json({error: "Something went wrong!"});
+    }
+}
+
+export const resetPasswordController = async (req: Request, res: Response) => {
+    // validate request body with schema
+    const {success, error, data: resetPasswordRequestBody} = resetPasswordSchema.safeParse(req.body);
+    if(!success) {
+        logger.error(`ERROR: resetPasswordController: Invalid request body : ${error.message}`);
+        res.status(400).json({message: "Invalid request body"});
+        return
+    }
+
+    try {
+        // check if user exists in DB or not
+        const user =await getUserByEmail(resetPasswordRequestBody.email);
+        if(user.length > 0 && user[0].isVerified) {
+            const hashedPassword = await hashPassword(resetPasswordRequestBody.password);
+            await db.update(userTable).set({password: hashedPassword}).where(eq(userTable.email, resetPasswordRequestBody.email));
+            res.status(200).json({message: "Password reset successfully."});
+        } else {
+            logger.error(`ERROR: resetPasswordController: User does not exist: ${resetPasswordRequestBody.email}`);
+            res.status(400).json({message: "User does not exist or Email not verified."});
+        }
+    } catch(error: any) {
+        logger.error(`ERROR: resetPasswordController: Internal Server Error: ${error}`);
         res.status(500).json({error: "Something went wrong!"});
     }
 }

@@ -38,3 +38,18 @@ export const loginUserSchema = z.object({
     email: z.string({message: "email is required"}).email(),
     password: z.string({message: "password is required"}).min(6),
 })
+
+export const forgotPasswordSchema = z.object({
+    email: z.string({message: "email is required"}).email(),
+})
+
+export const verifyPasswordResetOTPSchema = z.object({
+    email: z.string({message: "email is required"}).email(),
+    otp: z.string({message: "otp is required"}).min(6).max(6),
+})
+
+export const resetPasswordSchema = z.object({
+    email: z.string({message: "email is required"}).email(),
+    password: z.string({message: "password is required"}).min(6),
+    confirm_password: z.string({message: "confirm_password is required"}).min(6),
+})

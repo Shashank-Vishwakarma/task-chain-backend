@@ -24,16 +24,3 @@ export const getUserByEmail = async (email: string) => {
         throw error
     }
 }
-
-export const updateUserVerifiedStatus = async (email: string) => {
-    try {
-        await db.update(userTable).set({
-            isVerified: true
-        }).where(
-            eq(userTable.email, email)
-        );
-    } catch(error: any) {
-        logger.error(`ERROR: updateUserVerifiedStatus: ${error}`);
-        throw error
-    }
-}
