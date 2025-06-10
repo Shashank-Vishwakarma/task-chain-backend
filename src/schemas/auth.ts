@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-export const RegisterUserSchema = z.object({
+export const registerUserSchema = z.object({
     name: z.string({message: "name is required"}).min(1),
     email: z.string({message: "email is required"}).email(),
     password: z.string({message: "password is required"}).min(6),
@@ -13,4 +13,19 @@ export const RegisterUserSchema = z.object({
             path: ["confirm_password"],
         });
     }
+})
+
+export const googleAuthschema = z.object({
+    credential: z.string({message: "credential is required"}),
+    clientId: z.string({message: "clientId is required"}),
+})
+
+export const verifyOTPSchema = z.object({
+    email: z.string({message: "email is required"}).email(),
+    otp: z.string({message: "otp is required"}).min(6).max(6),
+})
+
+export const loginUserSchema = z.object({
+    email: z.string({message: "email is required"}).email(),
+    password: z.string({message: "password is required"}).min(6),
 })

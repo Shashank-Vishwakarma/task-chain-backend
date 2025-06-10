@@ -17,6 +17,13 @@ export const Config: EnvConfig = {
         POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
         POSTGRES_DB: process.env.POSTGRES_DB,
     },
+    EMAIL: {
+        SMTP_HOST: process.env.SMTP_HOST,
+        SMTP_PORT: parseInt(process.env.SMTP_PORT),
+        SMTP_USER: process.env.SMTP_USER,
+        SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+        EMAIL_FROM: process.env.EMAIL_FROM
+    },
     JWT_SECRET: process.env.JWT_SECRET
 }
 

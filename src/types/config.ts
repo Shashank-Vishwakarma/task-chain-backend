@@ -13,5 +13,12 @@ export interface EnvConfig {
         POSTGRES_PASSWORD: string
         POSTGRES_DB: string
     }
+    EMAIL: {
+        SMTP_HOST: string
+        SMTP_PORT: number
+        SMTP_USER: string
+        SMTP_PASSWORD: string
+        EMAIL_FROM: string
+    }
     JWT_SECRET: string
 }
