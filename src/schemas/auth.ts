@@ -18,6 +18,15 @@ export const registerUserSchema = z.object({
 export const googleAuthschema = z.object({
     credential: z.string({message: "credential is required"}),
     clientId: z.string({message: "clientId is required"}),
+    type: z.string({message: "type is required"}),
+}).superRefine(({type}, ctx)=>{
+    if(type !== "login" && type !== "signup") {
+        ctx.addIssue({
+            code: "custom",
+            message: "type must be login or signup",
+            path: ["type"],
+        })
+    }
 })
 
 export const verifyOTPSchema = z.object({
